@@ -75,7 +75,7 @@ public class Main {
         }
     }
 
-    private static List<Employee> parseCSV(String[] columnMapping, String fileName) {
+    public static List<Employee> parseCSV(String[] columnMapping, String fileName) {
         try (CSVReader csvReader = new CSVReader(new FileReader(fileName))) {
             ColumnPositionMappingStrategy<Employee> strategy = new ColumnPositionMappingStrategy<>();
             strategy.setType(Employee.class);
