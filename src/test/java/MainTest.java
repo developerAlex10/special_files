@@ -47,11 +47,28 @@ public class MainTest {
     }
 
     @Test
-    @DisplayName("Тест метода toString()")
-    public void toStringTest() {
-        Employee employee = new Employee(2, "Ivan", "Petrov", "RU", 23);
-        String expected = "Employee{id=2, firstName='Ivan', lastName='Petrov', country='RU', age=23}";
+    @DisplayName("Проверка данных второго пользователя")
+    public void csvFileTwoTest() {
+        List<Employee> result = Main.parseCSV(columnMapping, fileCsvTest);
 
-        Assertions.assertEquals(expected, employee.toString());
+        Employee firstEmployee = result.get(1);
+        Assertions.assertEquals(2, firstEmployee.id);
+        Assertions.assertEquals("Ivan", firstEmployee.firstName);
+        Assertions.assertEquals("Petrov", firstEmployee.lastName);
+        Assertions.assertEquals("RU", firstEmployee.country);
+        Assertions.assertEquals(23, firstEmployee.age);
+    }
+
+    @Test
+    @DisplayName("Проверка данных третьего пользователя")
+    public void csvFileThreeTest() {
+        List<Employee> result = Main.parseCSV(columnMapping, fileCsvTest);
+
+        Employee firstEmployee = result.get(2);
+        Assertions.assertEquals(3, firstEmployee.id);
+        Assertions.assertEquals("Irina", firstEmployee.firstName);
+        Assertions.assertEquals("Smirnova", firstEmployee.lastName);
+        Assertions.assertEquals("RU", firstEmployee.country);
+        Assertions.assertEquals(19, firstEmployee.age);
     }
 }
