@@ -1,5 +1,4 @@
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -9,24 +8,13 @@ import java.util.List;
 
 public class MainTest {
     private static final String fileCsvTest = "test_data.csv";
+    private static final String invalidFileCsvTest = "invalid_test_data.csv";
     private static final String[] columnMapping = {"id", "firstName", "lastName", "country", "age"};
-
-    @BeforeEach
-    public void setUp() throws IOException {
-        createTestCsvFile();
-    }
-
-    private void createTestCsvFile() throws IOException {
-        try (FileWriter writer = new FileWriter(fileCsvTest)) {
-            writer.write("1,John,Smith,USA,25\n");
-            writer.write("2,Ivan,Petrov,RU,23\n");
-            writer.write("3,Irina,Smirnova,RU,19\n");
-        }
-    }
 
     @Test
     @DisplayName("Проверка создания 3-х файлов")
-    public void csvFileCreateTest() {
+    public void csvFileCreateTest() throws IOException {
+        createCsvFile();
         List<Employee> result = Main.parseCSV(columnMapping, fileCsvTest);
 
         Assertions.assertNotNull(result);
@@ -35,7 +23,8 @@ public class MainTest {
 
     @Test
     @DisplayName("Проверка данных первого пользователя")
-    public void csvFileOneTest() {
+    public void csvFileOneTest() throws IOException {
+        createCsvFile();
         List<Employee> result = Main.parseCSV(columnMapping, fileCsvTest);
 
         Employee firstEmployee = result.get(0);
@@ -47,28 +36,44 @@ public class MainTest {
     }
 
     @Test
-    @DisplayName("Проверка данных второго пользователя")
-    public void csvFileTwoTest() {
-        List<Employee> result = Main.parseCSV(columnMapping, fileCsvTest);
+    @DisplayName("Проверка обработки пустого CSV файла")
+    public void emptyCsvFileTest() throws IOException {
+        createEmptyCsvFile();
+        List<Employee> result = Main.parseCSV(columnMapping, invalidFileCsvTest);
 
-        Employee firstEmployee = result.get(1);
-        Assertions.assertEquals(2, firstEmployee.id);
-        Assertions.assertEquals("Ivan", firstEmployee.firstName);
-        Assertions.assertEquals("Petrov", firstEmployee.lastName);
-        Assertions.assertEquals("RU", firstEmployee.country);
-        Assertions.assertEquals(23, firstEmployee.age);
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(0, result.size());
     }
 
     @Test
-    @DisplayName("Проверка данных третьего пользователя")
-    public void csvFileThreeTest() {
+    @DisplayName("Проверка обработки дубликатов")
+    public void csvFileDuplicateEntriesTest() throws IOException {
+        createDuplicateCsvFile();
         List<Employee> result = Main.parseCSV(columnMapping, fileCsvTest);
 
-        Employee firstEmployee = result.get(2);
-        Assertions.assertEquals(3, firstEmployee.id);
-        Assertions.assertEquals("Irina", firstEmployee.firstName);
-        Assertions.assertEquals("Smirnova", firstEmployee.lastName);
-        Assertions.assertEquals("RU", firstEmployee.country);
-        Assertions.assertEquals(19, firstEmployee.age);
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(4, result.size());
+    }
+
+    private void createCsvFile() throws IOException {
+        try (FileWriter writer = new FileWriter(fileCsvTest)) {
+            writer.write("1,John,Smith,USA,25\n");
+            writer.write("2,Ivan,Petrov,RU,23\n");
+            writer.write("3,Irina,Smirnova,RU,19\n");
+        }
+    }
+
+    private void createEmptyCsvFile() throws IOException {
+        try (FileWriter writer = new FileWriter(invalidFileCsvTest)) {
+        }
+    }
+
+    private void createDuplicateCsvFile() throws IOException {
+        try (FileWriter writer = new FileWriter(fileCsvTest)) {
+            writer.write("1,John,Smith,USA,25\n");
+            writer.write("2,Ivan,Petrov,RU,23\n");
+            writer.write("2,Ivan,Petrov,RU,23\n");
+            writer.write("4,Irina,Smirnova,RU,19\n");
+        }
     }
 }
